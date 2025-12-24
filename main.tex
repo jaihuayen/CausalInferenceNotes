@@ -1,0 +1,1192 @@
+\documentclass[12pt,letterpaper]{article} 
+\usepackage[ngerman,english]{babel}
+\input{head}
+\usepackage[ngerman,english]{babel}
+\usepackage[format=hang]{caption}
+\usepackage{placeins}
+\usepackage{hyperref}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{example}{Example}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows}
+
+% Define the specified style for tikz
+\tikzset{
+    var/.style={minimum size=0.6cm, inner sep=0pt}, % Keeping the node style simple as per the example
+    unobserved/.style={draw=none, minimum size=0.6cm, inner sep=0pt},
+    desc/.style={text width=7cm, align=left}
+}
+
+\makeatletter
+
+\newcommand*{\centernot}{%
+  \mathpalette\@centernot
+}
+\def\@centernot#1#2{%
+  \mathrel{%
+    \rlap{%
+      \settowidth\dimen@{$\m@th#1{#2}$}%
+      \kern.5\dimen@
+      \settowidth\dimen@{$\m@th#1=$}%
+      \kern-.5\dimen@
+      $\m@th#1\not$%
+    }%
+    {#2}%
+  }%
+}
+\makeatother
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\prob}{\mathbb{P}}
+\newcommand{\independent}{\perp\mkern-9.5mu\perp}
+\newcommand{\notindependent}{\centernot{\independent}}
+\newcommand*{\mybox}[1]{\framebox{#1}}
+
+\graphicspath{{./images/}}
+
+
+\begin{document}
+
+%-------------------------------
+%	TITLE SECTION
+%-------------------------------
+
+\fancyhead[C]{}
+\hrule \medskip % Upper rule
+\begin{minipage}{0.295\textwidth} 
+\raggedright
+\footnotesize
+Jai-Hua Kevin Yen \hfill\\
+kevinyen@buffalo.edu
+\end{minipage}
+\begin{minipage}{0.4\textwidth} 
+\centering 
+\large 
+Casual Inference: What If Notes\\ 
+\end{minipage}
+\begin{minipage}{0.295\textwidth} 
+\raggedleft
+\today \hfill\\
+Version 1.0
+\end{minipage}
+\medskip\hrule 
+\bigskip
+
+%-------------------------------
+%	CONTENTS
+%-------------------------------
+
+\section*{Chapter 1: A Definition of Casual Effect}
+
+\textbf{Casual Effect}: Compare action $A$ (two options for this action: taken, withheld) \\
+For example, for a dichotomous treatment $A$, 1 to be treated and 0 to be not treated. \\
+
+\textbf{Potential Outcome}: Let $Y$ (1: death, 0: survival) be the outcome of interest. $Y^{a=1}$, $Y^{a=0}$ be the potential outcomes or called counterfactual outcome. Note that these are random variables.\\
+
+\textbf{Consistency}: counterfactual outcome = observed outcome \\
+Looks "obvious" but sometimes this assumption would be violated. \\
+\textcolor{red}{Question: Why is this assumption needed since we definitely see the observed outcome?} \\
+
+\textbf{Average Causal Effect}: Since identify individual causal effect is not possible, turn into retreiving "aggregated" causal effect. The ingredients needed here are:
+
+\begin{itemize}
+    \item identify outcome of interest
+    \item $a=0$ vs. $a=1$ to be compared
+    \item $Y^{a=1}$ vs. $Y^{a=0}$ to be compared
+\end{itemize}
+
+This exists if: $P(Y^{a=1}=1) \neq P(Y^{a=0}=1)$ or in general, $E(Y^{a=1}) \neq E(Y^{a=0})$. \\
+
+Note: Sharp causal null hypothesis is a test for no causal effect for any individual. \\
+
+In this whole book, we have the following assumptions:
+
+\begin{itemize}
+    \item Assumption of no interference: an individual's outcome is independent of othersone's treatment
+    \item Assumption of no multiple versions of treatment: definition of a counterfactual outcome under treatment value a also implicitly
+assumes that there is only one version of treatment value $A=a$.
+\end{itemize}
+
+These assumptions are all one of the stable unit treatment value assumptions (SUTVA). \\
+
+\textbf{Meausre of Causal Effect}: To represent causal null,
+
+\begin{enumerate}
+    \item $P(Y^{a=1}=1) - P(Y^{a=0}=1) = 0 \quad$ causal risk difference (average individual causal effect)
+    \item $\frac{P(Y^{a=1}=1)}{P(Y^{a=0}=1)} = 1 \quad$ causal risk ratio
+    \item $\frac{P(Y^{a=1}=1)/P(Y^{a=1}=0)}{P(Y^{a=0}=1)/P(Y^{a=0}=0)} = 1 \quad$ causal odds ratio
+\end{enumerate}
+
+These are called the effect measures. \\
+
+\textbf{Number Need to Treat (NNT)}: On average, NNT measures how many people we need to treat in order to save "1" life. i.e.
+\begin{equation*}
+    NNT = \frac{-1}{P(Y^{a=1}=1)-P(Y^{a=0}=1)}
+\end{equation*}
+
+\textbf{Random Variability}: The procedure to compute effect measures is implausible, and is from two variability:
+\begin{enumerate}
+    \item sampling variability
+    \item non-deterministic counterfactuals (stochastic): we then aim to measure the average counterfactual outcome of population
+\end{enumerate}
+
+\begin{align*}
+    E(Y^{a}) &= E[E(Y^{a}|\Theta_{Y^a}(\cdot))] \\
+             &= \int y d E[\Theta_{Y^a}(\theta)]
+\end{align*}
+
+where $\Theta_{Y^a}(\cdot)$ is the individual-specific statistical distribution. \\
+
+Note that until Chapter 10, we ignore those two random variabilities. \\
+
+\textbf{Causation versus association}: Due to the fact that we can only observe one of the potential outcomes, here we define the observed outcome $Y$ from the treatment level $A$. Then the independent is defined in terms of $Y$ and $A$. Some equivalent definitions of independence are:
+
+\begin{enumerate}
+    \item $P[Y=1|A=1] - P[Y=1|A=0] = 0 \quad$ associational risk difference
+    \item $\frac{P[Y=1|A=1]}{P[Y=1|A=0]} = 1 \quad$ associational risk ratio
+    \item $\frac{P[Y=1|A=1]/P[Y=0|A=1]}{P[Y=1|A=0]/P[Y=0|A=0]} = 1 \quad$ associational odds ratio
+\end{enumerate}
+
+Thus, when treatment A and outcome Y are dependent or associated, we can see $P[Y=1|A=1] \neq P[Y=1|A=0]$. These are called the association measures. In general, we quantify the association using expectation $E[Y=1|A=1] \neq E[Y=1|A=0]$. \\
+
+\textcolor{blue}{\textbf{Most Important Idea of Chapter 1}: Inferences about causation are concerned with what if questions in counterfactual worlds, such as “what would be the risk if everybody had been treated?” and “what would be the risk if everybody had been untreated?”, whereas inferences about association are concerned with questions in the actual world, such as “what is the risk in the treated?” and “what is the risk in the untreated?”}
+
+\newpage
+
+\section*{Chapter 2: Randomized Experiments}
+
+
+The reality of our "actual data": data are missing for the counterfactual outcome. \\
+$\Rightarrow$ Randomization ensures the missing values occur by chance and somehow controled. \\
+
+\textbf{Ideal Randomized Experiment:}
+\begin{itemize}
+    \item no loss to follow up
+    \item full adherence to the assigned treatment
+    \item single version of treatment
+    \item double blind assignment
+\end{itemize}
+
+\textbf{Exchangeability:} The risk would be the same if the treatment and control group switched. i.e.,
+\begin{align*}
+    P(Y^a=1|A=1) = P(Y^a=1|A=0) = P(Y^a=1) \tag{$\ast$}
+\end{align*}
+or $Y^a \independent A$ for all $a$. \\
+It is also called \textbf{exogeneity} in causal inference. \\
+$\Rightarrow$ In ideal randomized experiments, association is causation. \\
+
+Note: 
+\begin{itemize}
+    \item $Y^a \independent A$ does not have the same meaning of $Y \independent A$. i.e., if treatment has causal effect on the outcome. $\Rightarrow$ $Y \notindependent A$ since treatment is associated with observed outcome.
+    \item $E[Y^a|A=1] = E[Y^a|A=0]$: mean exchangeability. For continuous, exchangeability $\Rightarrow$ mean exchangeability. But the other direction does not always true. The reason is that other distributional parameters other than mean (variance) may not be independent of the treatment.
+    \item A study is a randomized experiment even if exchangeability does not hold.
+\end{itemize}
+
+\textbf{Marginally Randomized Experiments:} use several randomized probabilities that depend on the value of a variable (e.g. prognostic factor $L$) \\
+
+\textbf{Conditionally Randomized Experiments:} use a single unconditional randomized probability common to all individuals
+Note: Conditionally randomized experiments will not generally result in exchangeability. If this experiment is simply combinations of marginally randomized experiments, then it is a marginally randomized experiments, it is exchangeable. i.e., 
+\begin{align*}
+    P(Y^a=1|A=1,L=1) = P(Y^a=1|A=0,L=1)
+\end{align*}
+or $Y^a \independent A|L=1$ for all $a$. For $L=0$, it also satisfies the formula above. \\
+
+When $Y^a \independent A|L=l$ for all values of $l$, we say $Y^a \independent A|L$. \\
+
+Note:
+\begin{itemize}
+    \item conditional randomization $\rightarrow$ conditional exchangeability
+    \item marginally randomization $\rightarrow$ marginal exchangeability, conditional exchangeability
+\end{itemize}
+
+Under \underline{marginal exchangeability}:
+
+\textbf{causal ratio:} $\frac{P(Y^{a=1}=1)}{P(Y^{a=0}=1)} = \frac{P(Y=1|A=1)}{P(Y=1|A=0)} \quad$ \textbf{associational risk ratio} holds since exchangeability
+
+Way to compute causal risk ratio in conditional randomized experiment: \\
+Recall: conditionally randomized experiment is combination of marginal randomized experiments. \\
+$\because$ association is causation in each subset \\
+
+\begin{enumerate}
+    \item If $P(Y^{a=1}=1|L=1) / P(Y^{a=0}=1|L=1) = P(Y=1|L=1, A=1) / P(Y=1|L=1, A=0)$ and $P(Y^{a=1}=1|L=0) / P(Y^{a=0}=0|L=0) = P(Y=1|L=0, A=1) / P(Y=1|L=0, A=0)$ are different $\implies$ stratification: effect modification by L or treatment effect heterogeneity across levels of L.
+    \item Average causal effect: $P(Y^{a=1}=1) / P(Y^{a=0}=1)$
+\end{enumerate}
+
+$$
+P(Y^a=1) = w_0 \cdot P(Y^a=1|L=0) + w_1 \cdot P(Y^a=1|L=1)
+$$
+weighted average of stratum-specific risks
+
+$\implies P(Y^a=1) = P(Y^a=1|L=0) \cdot P(L=0) + P(Y^a=1|L=1) \cdot P(L=1)$
+
+Or in general,
+$$
+P(Y^a=1) = \sum_l P(Y^a=1|L=l) P(L=l)
+$$
+
+Under \underline{conditional exchangeability},
+$$
+P(Y^a=1) = \sum_l P(Y=1|L=l, A=a) P(L=l)
+$$
+(Here just replace $P(Y^a=1|L=l)$ with $P(Y=1|L=l, A=a)$) \\
+
+If a counterfactual quantity can be expressed as a function of distribution (or probability) of observed data, we say the quantity is identified (or identifiable). \\
+
+\textbf{Standardization}
+
+$$
+\frac{P(Y^{a=1}=1)}{P(Y^{a=0}=1)} = \frac{\sum_L P(Y=1|L=l, A=1)P(L=l)}{\sum_L P(Y=1|L=l, A=0)P(L=l)}
+$$
+
+Standardized risk: the ``counterfactual'' risk that would have been observed had all the individuals in the population been treated \underline{under conditional exchangeability} \\
+
+
+\textbf{IP weights}
+
+$$W^A = 1/f(A|L)$$
+
+Example: A treated individual with $L=l$ receives weight $\frac{1}{P(A=1|L=l)}$. An untreated individual with $L=l'$ receives weight $\frac{1}{P(A=0|L=l')}$.
+
+Note: \begin{itemize}
+    \item IP weighting: marginal probability of treatment A given covariate L.
+    \item Standardization: probability of covariate L and conditional probability of outcome Y given A and L.
+    \item In discrete case, these two are equivalent under positivity and conditional exchangeability and equal to $E(Y^a)$: $E(Y^a) = \sum_l E(Y|A=a, L=l) P(L=l) = E\left[\frac{I(A=a)Y}{f(A|L)}\right]$
+\end{itemize}
+
+\textcolor{red}{If the number of individuals is multiplied times 2, then the number of deaths is also doubled.}
+
+\newpage
+
+\section*{Chapter 3: Observational Studies}
+
+Hesitation to empower observational associations with a causal interpretation is the lack of randomized treatment assignment. \\
+
+\underline{Strategy}: Analyze as if treatment is randomly assigned conditional on covariate $L$.
+$\rightarrow$ viewed as a conditionally randomized experiment if
+\begin{enumerate}
+    \item consistency
+    \item exchangeability
+    \item positivity
+\end{enumerate}
+holds. \\
+
+From observational studies, causal inference requires data and \textbf{identifiability conditions} ((1)-(3) mentioned above). \\
+
+\textbf{Exchangeability}: In case of measured covariates ($L$), it must be conditional exchangeable $(Y^a \independent A | L)$ within levels of $L$.  This would not hold if there exist some unmeasured independent predictor $U$. \\
+
+\textbf{Positivity}: For every combination of covariates, there must be a chance receiving any of the treatment. i.e. $P(A=a | L=l) > 0$ for all $a$ with $P(L=l) > 0$. \\
+
+Note: Positivity is only required when the variable ($L$) is required for exchangeability. \\
+
+\textbf{Consistency}: $Y = Y^a = A Y^{a=1} + (1-A) Y^{a=0}$
+\begin{enumerate}
+    \item precise definition of counterfactual outcome $Y^a$
+    \item linkage of counterfactual outcomes to the observed outcomes
+\end{enumerate}
+
+For (1), sometimes this assumption does not hold since although intervention $a=1$ is well defined, ($Y^{a=1}$ is also well defined), sometimes each experiment implements a different version of $a=1$. The counterfactual outcome $Y^a$ will differ in the setting of different versions of $a=1$. \\
+
+Note: In reality, these interventions are very hard to perfectly specify $\rightarrow$ the average causal effect varies across populations. \\
+
+For (2), if it is an observational study, it is hard to have the data available. Then the well-defined counterfactual outcome is not necessarily equal to the individual's observed outcome. \\
+
+\textbf{Target trial framework}: This involves:
+
+\begin{itemize}
+    \item Specifying a hypothetical randomized trial (the target trial) that you would ideally conduct to answer the causal question.
+    \item Emulating this trial using the observational data.
+\end{itemize}
+
+This process forces investigators to explicitly define the key components of the study, such as eligibility criteria, interventions, outcomes, and follow-up. By doing so, it helps clarify the causal question and makes the necessary assumptions for consistency and exchangeability transparent. The framework helps prevent analyses that correspond to impossible or nonsensical interventions.
+
+\newpage
+
+\section*{Chapter 7: Counfounding (With Part of Ch6: Graphical Representation of Causal Effects)}
+
+\textbf{Counfounding:} In obervational studies, treatment may be determined by many other factors. 
+
+\begin{center}
+  \begin{tikzpicture}[->,>=stealth,thick,node distance=2cm]
+  \node (L) {$L$};
+  \node (A) [right of=L] {$A$};
+  \node (Y) [right of=A] {$Y$};
+
+  \draw (L) -- (A);
+  \draw (A) -- (Y);
+  \draw (L) .. controls +(2,1) .. (Y);
+\end{tikzpicture}
+\end{center}
+
+From the image above, we can see the presence of the common cause $L$ creates an additional source of association between the treatment $A$ and the outcome $Y$, which we refer to as confounding for the effect of $A$ on $Y$. \\
+
+Note: Due to counfounding, associational risk ratio does not equal the causal risk ratio. i.e., \underline{association is not causation}. \\
+
+\textbf{Collider:} The definition of collider is path-specific: $L$ is a \underline{collider} on the path $A$←$U_2$→$L$←$U_1$→$Y$, but not on the path $A$←$L$←$U_1$→$Y$ in the following graph:
+
+\begin{center}
+  \begin{tikzpicture}[
+node distance=2.5cm,
+every node/.style={font=\Large},
+>=stealth'
+]
+  \node (U1) {$U_{1}$};
+  \node (L) [below right of=U1, xshift=-1cm, yshift=0.5cm] {$L$};
+  \node (A) [right of=L] {$A$};
+  \node (Y) [right of=A] {$Y$};
+  \node (U2) [below of=L] {$U_{2}$};
+
+  \draw[->] (U1) -- (L);
+  \draw[->] (U1) -- (Y);
+  \draw[->] (L) -- (A);
+  \draw[->] (A) -- (Y);
+  \draw[->] (U2) -- (L);
+  \draw[->] (U2) -- (A);
+\end{tikzpicture}
+\end{center}
+
+Note: 
+\begin{itemize}
+  \item Causal graphs theory shows that indeed conditioning on a collider opens the path, which was blocked when the collider was not conditioned on.
+  \item There is an arrow $L$→$A$. The presence of this arrow creates an open backdoor path $A$←$L$←$U_1$→$Y$ because $U_1$ is a common cause of $A$ and $Y$, and so confounding exists. Conditioning on $L$ would block that backdoor path but would simultaneously open a backdoor path on which $L$ is a collider.
+\end{itemize}
+
+
+\textbf{D-separation:} We define a path to be either blocked or open according to the following graphical rules:
+\begin{enumerate}
+  \item If there are no variables being conditioned on, a path is blocked if and only if two arrowheads on the path collide at some variable on the path
+  \item Any path that contains a non-collider that has been conditioned on is blocked
+  \item A collider that has been conditioned on does not block a path
+  \item A collider that has a descendant that has been conditioned on does not block a path
+\end{enumerate}
+
+\textbf{Backdoor Criterion:} A set of covariates $L$ satisfies the backdoor criterion if all backdoor paths between $A$ and $Y$ are blocked by conditioning on $L$ and $L$ contains no variables that are descendants of treatment $A$. \\
+
+Note: 
+\begin{itemize}
+  \item Under faithfulness and a further condition, conditional exchangeability $Y^a \independent A|L$ holds if and only if $L$ satisfies the backdoor criterion.
+  \item The two settings in which the backdoor criterion is satisfied are
+  \begin{itemize}
+    \item No common causes of treatment and outcome: no backdoor paths that need to be blocked
+    \item No unmeasured confounding
+  \end{itemize}
+\end{itemize}
+
+Two structural sources of lack of exchangeability:
+\begin{itemize}
+  \item Confounding (any systematic bias that would be eliminated by randomized assignment of $A$): the presence of common causes of treatment and outcome—which creates an open backdoor path
+  \item Selection bias: conditioning on a common effect—which may open a previously blocked backdoor path
+\end{itemize}
+
+The traditional approach to handling confounding is flawed because it relies on statistical associations rather than causal knowledge. This approach defines a confounder as a variable that is:
+\begin{enumerate}
+  \item Associated with the treatment
+  \item Associated with the outcome (conditional on the treatment)
+  \item Not on the causal pathway between treatment and outcome ($A$ $\rightarrow$ $Y$)
+\end{enumerate}
+
+For the graph below, where this traditional definition incorrectly identifies a non-confounder as a confounder. In this case, adjusting for the variable ($L$) would actually introduce a new bias, called  selection bias, by opening a previously blocked backdoor path.
+
+\begin{center}
+  \begin{tikzpicture}[
+node distance=2.5cm,
+every node/.style={font=\Large},
+>=stealth'
+]
+    \node (U1) {$U_{1}$};
+    \node (L) [below right of=U1, xshift=-1cm, yshift=0.5cm] {$L$};
+    \node (A) [right of=L, yshift=0.5cm] {$A$};
+    \node (Y) [right of=A] {$Y$};
+    \node (U2) [below of=L] {$U_{2}$};
+
+    \draw[->] (U1) -- (L);
+    \draw[->] (U1) -- (Y);
+    \draw[->] (A) -- (Y);
+    \draw[->] (U2) -- (L);
+    \draw[->] (U2) -- (A);
+  \end{tikzpicture} 
+\end{center}
+
+\textbf{Structural Approach:} A structural approach starts by explicitly identifying the sources of confounding—the common causes of treatment and outcome that, were they all measured, would be sufficient to adjust for confounding—and then identifies a sufficient set of adjustment variables. \\
+
+Exchangeability is translated into graph language as the \underline{lack of open paths between the treatment $A$ and outcome $Y$ nodes}, other than those originating from $A$, that would result in an association between $A$ and $Y$. \\
+
+\textbf{Single-world Intervention Graphs (SWIGs):} a graph that represents a counterfactual world created by a single intervention. \\
+For example, the graph below represents represents a world in which all individuals have received an intervention that sets their treatment to the fixed value $a$:
+
+\begin{center}
+  \begin{tikzpicture}[->,>=stealth,thick,node distance=2cm]
+    \node (U) {$U$};
+    \node (L) [above right of=U] {$L$};
+    \node (A) [right of=L] {$A \mid a$};
+    \node (Y) [right of=A] {$Y^a$};
+
+    \draw (U) -- (L);
+    \draw (L) -- (A);
+    \draw (A) -- (Y);
+    \draw (U) -- (Y);
+\end{tikzpicture}
+\end{center}
+
+Note: The key idea is that if the counterfactual outcome ($Y^a$) is d-separated from the natural treatment value ($A$) given a set of variables ($L$), then conditional exchangeability holds and confounding is eliminated. \\
+
+\textbf{Confounding Adjustment:} Methods that adjust for confounders $L$ (a set of non-descendants of treatment $A$ that includes enough variables to block all backdoor paths from $A$ to $Y$) can be classified into two broad categories:
+\begin{itemize}
+  \item G-methods: Standardization, IP weighting, and g-estimation: These methods (the "g" stands for "generalized") exploit conditional exchangeability given $L$ to estimate the causal effect of $A$ on $Y$ in the entire population or in any subset of the population. (assume if backdoor paths involving the measured variables $L$ did not exist)
+  \item Conventional methods for stratification-based adjustment: Stratification (including restriction) and matching. These methods exploit conditional exchangeability given $L$ to estimate the association between $A$ and $Y$ in subsets defined by $L$.
+\end{itemize}
+
+Note: All the above methods require conditional exchangeability given $L$. However, confounding can sometimes be handled by methods that do not require conditional exchangeability. Moreover, achieving conditional exchangeability may be an unrealistic goal in many observational studies but expert knowledge about the causal structure can be used to get as close as possible to that goal.
+
+\newpage
+
+\section*{Chapter 8: Selection Bias}
+
+Only focus on \underline{selection bias under null}: conditioning on common effects
+
+\begin{center}
+    \begin{tikzpicture}[
+    node distance=2.5cm,
+    every node/.style={font=\Large},
+    >=stealth'
+    ]
+        \node (A) {$A$};
+        \node (Y) [right of=A] {$Y$};
+        \node (C) [right of=Y] {$C$};
+
+        % Arrows
+        \draw[->] (A) -- (Y);
+        \draw[->] (Y) -- (C);
+
+        % Curved arrow for common effect indication (adjusting to point A to Y)
+        \draw[->] (A) to [bend left=30] (C);
+
+        \node[below=0.2cm of A, desc, align=center, font=\normalsize] {treatment};
+        \node[below=0.2cm of Y, desc, align=center, font=\normalsize] {outcome};
+        \node[below=0.2cm of C, desc, align=center, font=\normalsize] {common effect};
+    \end{tikzpicture}
+\end{center}
+
+For example:
+A study to estimate the effect of folic acid supplements given to pregnant women shortly after conception on the fetus’s risk of developing a cardiac malformation during the first two months of pregnancy.
+\begin{itemize}
+    \item $A$: folic acid supplement
+    \item $Y$: cardiac malformation (1: yes, 0: no)
+    \item $C$: death before birth
+\end{itemize}
+
+Source of association of treatment and outcome:
+\begin{enumerate}
+    \item open path: $A \to Y$
+    \item open path: $A \to C \leftarrow Y$ if condition on $C$ (association between $A$ and $Y$)
+\end{enumerate}
+
+Due to \underline{selection bias}, association/risk ratio $\ne$ causal risk ratio $\implies \text{association} \ne \text{causation}$ \\
+
+\textbf{Study of HIV infection}
+
+\begin{center}
+    % Diagram 8.3 (as per the content on Page 2)
+    \begin{tikzpicture}[
+    node distance=2.5cm,
+    every node/.style={font=\Large},
+    >=stealth'
+    ]
+        % Main sequence A -> C -> Y
+        \node[var] (L) {$L$};
+        \node[var] (A) [right of=L] {$A$};
+        \node[var] (C) [right of=A] {$C$};
+        \node[var] (Y) [right of=C] {$Y$};
+        \node[unobserved] (U) [below of=L] {$U$};
+
+        % Arrows
+        \draw[->] (A) -- (C);
+        \draw[->] (U) -- (L); % U->L
+
+        % Curved A-C link from the drawing (A -> C <- L implies C is a collider for A and L)
+        \draw[->] (L) to [bend right=30] (C);
+
+        % Curved U-Y link (U is a cause of Y)
+        \draw[->] (U) to [bend right=120] (Y);
+
+    \end{tikzpicture}
+\end{center}
+
+\begin{itemize}
+    \item $A$: antiretroviral treatment
+    \item $Y$: 3-year risk of death
+    \item $U$: high level of immunosuppression (1: yes, 0: no) (unmeasured variable)
+    \item $C$: censored or not (1: yes, 0: no)
+    \item $L$: symptoms, CD4 count etc
+\end{itemize}
+
+$A \to C$: treatment has side effects so patients want to dropout \\
+$C$: analysis is restricted to those who are remain uncensored \\
+$U \to Y$: individuals with $U=1$ have a greater risk of death. \\
+
+Based on $d$-separation, conditioning on $C$ opens path, thus association flows from $A$ to $Y$. \\
+
+$C$: common effect of $A$ and $L$ (rather than $Y$) \\
+Note: The bias is the result of selection on a common effect of two other variables in the diagram. \\
+
+\textbf{Selection Bias}: Bias arises from conditioning on a common effect of two variables:
+\begin{enumerate}
+    \item treatment or cause of treatment
+    \item outcome or cause of outcome.
+\end{enumerate}
+
+\textbf{Selection Bias Examples}:
+\begin{enumerate}
+    \item Differential loss to follow-up: informative censoring.
+    \item Missing Data Bias: restricting the analysis to individuals with complete data ($C=0$) would result in bias (might be some reason why they are reluctant to provide information or miss study visits).
+    \item Healthy Worker Bias
+    \item Self-selection Bias (Volunteer Bias)
+    \item Selection affected by treatment received before study entry
+\end{enumerate}
+
+\noindent\textbf{Note:}
+\begin{enumerate}
+    \item Randomization protects against confounding, but not against selection bias when the selection occurs after randomization.
+    \item No bias arises in randomized experiments from selection into the study before treatment is assigned.
+\end{enumerate}
+
+\textbf{Comparison of Selection Bias and Confounding}:
+Statisticians and econometricians often use the term “selection bias” to refer to both types of biases
+\begin{itemize}
+    \item confounding: selection of individuals into analysis
+    \item selection bias: selection of individuals into treatment
+\end{itemize}
+which would lead to lack of exchangeability. \\
+
+\underline{\textbf{Adjust of Selection Bias}:}
+IP weight could be used to adjust both confounding and selection bias.
+
+\begin{itemize}
+    \item confounding: $W^A = 1 / f(A|L)$
+    \item selection bias: $W^C = 1 / P(C=0|A,L)$
+\end{itemize}
+
+$\implies$ construct pseudo-population of the same size as the original study population but in which nobody is lost to follow-up.
+\begin{enumerate}
+    \item exchangeability
+    \item positivity
+    \item sufficiently well-defined intervention
+\end{enumerate}
+
+\noindent\textbf{Note:} IP weighting appropriately adjusts for selection bias because this approach is not based on estimating effect measures conditional on the covariate $L$, but rather on estimating unconditional effect measures after reweighting the individuals according to their treatment and their values of $L$.
+
+\newpage
+
+\section*{Chapter 12: IP Weighting and Marginal Structure Models}
+
+At start, the notations are defined as:
+\begin{itemize}
+    \item $L$: covariates
+    \item $Y$: outcome
+    \item $A$: treatment
+\end{itemize}
+
+\subsection*{An Example}
+\textbf{Aim:} Estimate ATE of smoking cessation (treatment $A$) on weight gain (outcome $Y$).
+
+\subsection*{Difficulty}
+$\text{ATE} = E[Y^{a=1}] - E[Y^{a=0}]$ ($a=1$ is quit smoking, $a=0$ is don't quit), which is \textbf{different from} what we have from the data, the associational difference: $E[Y|A=1] - E[Y|A=0]$
+
+\subsection*{Why have this difference?}
+Age is a \textbf{confounder} of the effect $A \to Y$.
+\begin{itemize}
+    \item Older people gain less weight than younger people no matter they quit smoking or not.
+    \item Age need to adjust before analysis.
+\end{itemize}
+
+\subsection*{How do we adjust?}
+\textbf{IP Weighting}: Creates a pseudo-population where the contribution of each individual is re-weighted so that the distribution of $L$ is independent of $A$ $\Rightarrow$ Try to construct a dataset mimic randomized experiment.
+\begin{itemize}
+    \item $A \perp L$
+    \item $E_{ps}[Y|A=a] = \sum_{l} E[Y|A=a, L=l] P(L=l)$ (Pseudo-population mean equals to the standard mean in the actual population)
+\end{itemize}
+
+Note that these properties are still true if conditional exchangeability ($Y^a \perp A | L$) does not hold. If conditional exchangeability holds, then:
+
+\begin{itemize}
+    \item mean of $Y^a$ is the same in two populations.
+    \item unconditional exchangeability (no confounding) holds in pseudo-population. ($Y^a \perp A$)
+    \item $E(Y^a) = E_{ps}[Y|A=a]$
+    \item \textbf{Association is causation in pseudo-population}
+\end{itemize}
+
+\subsection*{How can we estimate the IP weights?}
+Estimate weights via modeling. The individual-specific IP weights for treatment $A$ are: $W^A = \frac{1}{f(A|L)}$. For non-parametric estimation of $W^A$, if we have high-dimensional $L$, obtaining a meaningful stratum-specific estimate of $W^A$ can be very difficult. For a parametric approach, we can fit a logistic regression:
+
+\begin{equation*}
+    \text{logit}(P(A=1|L)) = L^T \beta
+\end{equation*}
+
+After we have the estimation of IP weights, our next step is to compute $\hat{E}_{ps}[Y|A=1] - \hat{E}_{ps}[Y|A=0]$ in the pseudo-population.
+
+The way to estimate $E_{ps}[Y|A=1] - E_{ps}[Y|A=0]$ is to fit a saturated linear mean model:
+
+\begin{equation*}
+    E[Y|A] = \theta_0 + \theta_1 A
+\end{equation*}
+
+by WLS (Weighted Least Squares) with weights $\hat{W}$:
+
+\begin{equation*}
+    \hat{W} = 
+    \begin{cases}
+        \frac{1}{\hat{P}(A=1|L)} & \text{for quitters (A=1)} \\
+        \frac{1}{1-\hat{P}(A=1|L)} & \text{for non-quitters (A=0)}
+    \end{cases}
+\end{equation*}
+
+The target is to minimize
+\begin{equation*}
+    \sum_{i} \hat{W}_i [Y_i - (\theta_0 + \theta_1 A_i)]^2
+\end{equation*}
+
+\textbf{Note:} This IP weighted mean for treatment $a$ is equal to the counterfactual mean under positivity and exchangeability. i.e.,
+
+\begin{equation*}
+    E\left[\frac{I(A=a)Y}{f(A|L)}\right] = E[Y^a]
+\end{equation*}
+
+$E[Y^a]$ will be estimated by a consistent estimator by the Horvitz-Thompson approach \cite{horvitz1952generalization}:
+
+\begin{equation*}
+    \hat{E}\left[\frac{I(A=a)Y}{f(A|L)}\right]
+\end{equation*}
+
+We need to assume $f(A|L)$ is known. However, the \textbf{Hájek estimator} \cite{Hajek1971} is preferred \cite{lunceford2004stratification}, which is defined as:
+
+\begin{equation*}
+    \frac{\hat{E}\left[\frac{I(A=a)Y}{f(A|L)}\right]}{\hat{E}\left[\frac{I(A=a)}{f(A|L)}\right]}
+\end{equation*}
+
+It is preferred since it can be guaranteed to lie between 0 and 1 for dichotomous $Y$, even if $f(A|L)$ is unknown and replaced by $\hat{f}(A|L)$. If positivity is not held, the difference between Hájek estimators does not have a causal interpretation. Also, the variance is needed to construct a 95\% C.I. There are normally three ways to do it:
+\begin{enumerate}
+    \item Nonparametric bootstrapping (time-consuming, computation cost)
+    \item Derive variance estimator under statistical theory (not generally available)
+    \item Robust Variance Estimator: Standard option in most statistical software packages (Used for independent working correlation in GEE). \mybox{Downside:} conservative.
+\end{enumerate}
+For example, if weight = 2, it means we form 2 copies of the original study population to produce the pseudo-population (one for treated and the other for untreated).
+
+\subsection*{Better approach for obtaining weights?}
+Stabilized weights which is defined as:
+
+\begin{equation*}
+    SW^A = \frac{f(A)}{f(A|L)}
+\end{equation*}
+
+The properties are as follows:
+
+\begin{itemize}
+    \item Can have narrower 95\% C.I.
+    \item This superiority can only occur when the model is not saturated.
+    \item In data analysis, one should check whether $SW$ has a mean of 1. If not, model misspecification or possible violations, or near violations, of positivity may be the issue.
+\end{itemize}
+
+\textbf{Review:} If the positivity assumption does not meet, it will signal these two problems:
+\begin{enumerate}
+    \item Lack of Overlap: there's little to no empirical overlap between the treated and control groups, making causal comparison tenuous.
+    \item Model Misspecification: A misspecified propensity score model might generate extreme predicted probabilities.
+\end{enumerate}
+
+\subsection*{How can we diagnose whether the IP weight estimation is good?}
+\cite{austin2015moving} suggest a framework for how we can use the IP weights and evaluate whether we have a balanced dataset or not and has not appear in the previous works.
+
+\begin{enumerate}
+    \item Identify Confounders: draw DAGs, review literature to ensure conditional exchangeability
+    \item Specify Propensity Score Model: prior evidence show that it is preferable to include either prognostically important variables or confounding covariates in the model
+    \item Calculate Weights \& Diagnose Weights: check the positivity assumption
+    \begin{itemize}
+        \item The mean of stabilized weights should be close to 1.
+        \item Identify the maximum and minimum values of the weights.
+    \end{itemize}
+    \item Access Covariate Balance:
+    \begin{enumerate}
+        \item Quantitative: calculate standardized mean difference (SMD), which is defined as
+        \begin{equation*}
+            \text{SMD}=\frac{\bar{x}_{treated}-\bar{x}_{control}}{\sqrt{\frac{s_{treated}^2+s_{control}^2}{2}}}
+        \end{equation*}
+        , where $\bar{x}_{weight}=\frac{\sum w_i x_i}{\sum w_i}$ and $s_{weight}^2=\frac{\sum w_i}{(\sum w_i)^2-\sum w_i^2}\sum w_i (x_i-\bar{x}_{weight})^2$ for all covariates and interactions (note that SMDs is not influenced by sample size compare to $t$-test) and present it in a table such as in \hyperref[tb1]{[Table 1]} or absolute standardize difference graph as in \hyperref[fig1]{[Figure 1]}.
+        \item Qualitative: graph boxplots and eCDF plots to inspect the distributional balance. For eCDFs, we can use Kolmogorov-Smirnov (K-S) test statistic to have a formal comparison of distributions. Example graphs are in \hyperref[fig2]{[Figure 2]}.
+    \end{enumerate}
+    \item Evaluate Balance and Iterate
+    \item Estimate Effect
+    \item Estimate Variance
+\end{enumerate}
+
+\textbf{Note:} For the K-S test in detecting distributional difference, we use only the descriptive statistic rather than the p-value from the formal hypothesis testing. The reasons are:
+
+\begin{itemize}
+    \item p-values are heavily influenced by sample size
+    \item p-value answers questions on the hypothetical population, but in here we only cares about the specific dataset
+    \item K-S test statistic can be computed on the weighted dataset, but p-value of this test assume you have an unweighted dataset
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \caption{Absolute Standardized Mean Differences Graph using \cite{lalonde1986evaluating}.}
+    \includegraphics[scale=0.4]{./images/01.png}
+    \label{fig1}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \caption{Box Plots and CDF Graphs to Show Pre- and Post Weighting \cite{austin2015moving}}
+    \includegraphics[scale=0.4]{./images/02.png}
+    \label{fig2}
+\end{figure}
+
+\begin{table}[h!]
+    \centering
+    \caption{Covariate Balance Before and After Inverse Probability of Treatment Weighting (Hypothetical Data)}
+    \begin{tabular}{lcccccc}
+        \toprule
+        \textbf{Covariate} & \multicolumn{3}{c}{\textbf{Unweighted}} & \multicolumn{3}{c}{\textbf{Weighted}} \\
+        \cmidrule(lr){2-4} \cmidrule(lr){5-7}
+        & \textbf{Treated} & \textbf{Control} & \textbf{SMD} & \textbf{Treated} & \textbf{Control} & \textbf{SMD} \\
+        \midrule
+        Age (years), mean (SD) & $55.2$ ($8.1$) & $51.5$ ($9.2$) & $0.42$ & $53.1$ ($8.8$) & $53.0$ ($8.9$) & $0.01$ \\
+        Female, \% & $65.0$ & $50.0$ & $0.30$ & $58.1$ & $57.9$ & $0.00$ \\
+        Prior MI, \% & $20.0$ & $10.0$ & $0.28$ & $14.5$ & $14.6$ & $-0.00$ \\
+        BMI, mean (SD) & $28.1$ ($4.5$) & $26.5$ ($4.8$) & $0.34$ & $27.2$ ($4.6$) & $27.3$ ($4.7$) & $-0.02$ \\
+        \midrule
+        \multicolumn{7}{l}{\textbf{Higher-Order Terms}} \\
+        \addlinespace[0.2em]
+        Age$^2$ & $3112.4$ & $2736.5$ & $0.39$ & $2900.1$ & $2888.7$ & $0.01$ \\
+        Age $\times$ BMI & $1551.1$ & $1364.8$ & $0.35$ & $1449.6$ & $1452.3$ & $-0.00$ \\
+        \bottomrule
+    \end{tabular}
+    \label{tb1}
+\end{table}
+
+\subsection*{Marginal Structural Model (MSM)}
+
+\begin{itemize}
+    \item \textbf{Model: $E(Y^a) = \beta_0 + \beta_1 a$}
+    \begin{itemize}
+        \item We can have $\text{ATE} = E(Y^{a=1}) - E(Y^{a=0}) = \beta_1$
+        \item In \textbf{IP weighting}, we are fitting a weighted least square of $E(Y|A) = \theta_0 + \theta_1 A$ to the pseudo-population
+        \begin{itemize}
+            \item Under assumption, association is causation in the pseudo-population
+            \item $\hat{\theta}_1$ has the same meaning as $\beta_1$
+            \item Having a consistent $\hat{\theta}_1$ of the association parameter in the pseudo-population is also a consistent estimator of causal effect $\beta_1$ in the population.
+        \end{itemize}
+        \item Note that this is a saturated model.
+        \begin{itemize}
+            \item For continuous treatment (or at least more than two treatment values), we need to fit a non-saturated marginal structural mean model
+            \item Downside of IP weighting approach: for constructing pseudo-population, we need to estimate $SW^A = f(A) / f(A|L)$. For dichotomous treatment $A$, $f(A|L)$ can be estimated by logistic regression. However, for continuous treatment $A$, estimating pdf $f(A|L)$ is hard. Although you can assume the distribution of $f(A|L)$, the effect estimate will be sensitive. But still in the \cite{robins2000marginal}, they suggest to assume to be normal distribution.
+        \end{itemize}
+        \item MSM model on dichotomous outcome
+        \begin{equation*}
+            \log \left( \frac{P(D^a=1)}{P(D^a=0)} \right) = \alpha_0 + \alpha_1 a, \quad a \in \{0, 1\}
+        \end{equation*}
+        where $a=1$ be getting heart death and $a=0$ be no heart death.
+        $\exp(\alpha_1)$: causal odd ratio of death for quitting smoke vs not quitting smoke.
+    \end{itemize}
+ 
+    \item \textbf{Effect modification}
+    \begin{itemize}
+        \item May want to add covariates $V$ in a marginal structural model to access effect modification.
+        \begin{equation*}
+            E(Y^a|V) = \beta_0 + \beta_1 a + \beta_2 V a + \beta_3 V
+        \end{equation*}
+        % \item Note that although it is not an marginal structural model anymore, the term is still applied.
+        \item IP weighting based on $SW^A(V) = \frac{f(A|V)}{f(A|L)}$ generally gives smaller C.I. ($f(A|V)$ is estimated by logistic model by adding $V$ as covariate)
+        \item Should choose $V$ only for the investigator's \textbf{substantive interest}
+        \begin{itemize}
+            \item If the investigator believe $V$ is a ``effect modifier" and has greater substantive interest in the \underline{causal effect of treatment within levels of the covariate $V$} than in the population.
+        \end{itemize}
+    \end{itemize}
+
+    \item \textbf{Time-Dependent Treatment MSM}
+    \begin{itemize}
+        \item $\overline{A}=(A_1,A_2,...,A_K)$: observed treatment history vector ; $\overline{a}$: potential treatment history vector ; $\overline{L}$: covariates history matrix
+        \item Assume no unmeasued confounders exists.
+        \item For time-dependent treatments, the counterfactual is $Y_{\overline{a}}$ (the outcome under treatment history $\overline{a}$). An MSM for this might be:
+        \begin{equation*}
+            \text{logit}[P(Y_{\overline{a}}=1)] = \beta_0 + \beta_1 cum(\overline{a})
+        \end{equation*}
+        where $cum(\overline{a}) = \sum_{k=0}^{K} a_k$ is the cumulative treatment. This is an \textit{unsaturated} (parsimonious) model assuming the causal effect depends only on the total cumulative treatment.
+        \item For the association model, we can use the similar formula:
+        \begin{equation*}
+            \text{logit}[P(Y=1| \overline{A} = \overline{a})] = \beta_0 ' + \beta_1 ' cum(\overline{a})
+        \end{equation*}
+        with the stabilized weights to be:
+        \begin{equation*}
+            sw_i = \prod_{k=0}^{K} \frac{P(A_k = a_{ki} | \overline{A}_{k-1} = \overline{a}_{(k-1)i})}{P(A_k = a_{ki} | \overline{A}_{k-1} = \overline{a}_{(k-1)i}, \overline{L}_k = \overline{l}_{ki})}
+        \end{equation*}
+        \item After adjusting for treatment $A$ (treatment is now not confounded), $\beta_1 = \beta_1 '$
+    \end{itemize}
+    
+    \item \textbf{Censoring and Missing Data}
+    \begin{itemize}
+        \item No new idea is required since we can conceptually treat censoring as just another time-varying treatment. We can calculate the \textbf{Inverse-Probability-of-Censoring Weight (IPCW)}, $sw_i^\dagger$. Since the outcome $Y$ is unobserved unless the subject does not drop out, our weighted model fit is restricted to subjects who were not censored:
+        \begin{equation*}
+            sw_i^\dagger = \prod_{k=0}^{K+1} \frac{P(C_k = 0 | \overline{C}_{k-1} = 0, \overline{A}_{k-1})}{P(C_k = 0 | \overline{C}_{k-1} = 0, \overline{A}_{k-1}, \overline{L}_k)}.
+        \end{equation*}
+        And the final weight for each subject is the product of the two: $sw_{final} = sw_i \times sw_i^\dagger$. The final MSM is then fit using this combined weight.
+
+    \end{itemize}
+\end{itemize}
+
+\newpage
+
+\section*{Chapter 13: Standardization and the Parametric G-Formula}
+
+For estimating the average treatment effect (ATE) $\E[Y^{a=1}]-\E[Y^{a=0}]$, there are two ways to calculate:
+\begin{enumerate}
+    \item IP weighting (Chapter 12)
+    \item Standardization (This chapter)
+\end{enumerate}
+% IP weighting requires estimating the joint distribution of treatment and censoring.
+
+Under exchageability and positivity conditional on the variables $L$, we have the property of association equals to causation.
+For discrete treatment $L$, we can calculate the standardized mean in the uncensored who received treatment $a$:
+\begin{equation*}
+    \E[Y^{a, c=0}] = \sum_{l} \E[Y|A=a,C=0,L=l] \prob[L=l]
+\end{equation*}
+and for continuous $L$, we can calculate the standardized mean in the uncensored who received treatment $a$:
+\begin{equation*}
+    \E[Y^{a, c=0}] = \int \E[Y|A=a,C=0,L=l] dF_L(l)
+\end{equation*}
+
+Estimating $\E[Y|A=a,C=0,L=l]$ would not be hard by non-parametric approach if $L$ is discrete and the outcomes of $L$ are not too many. If we have a high-dimensional data with many confounders, some of them with multiple levels, the non-parametric estimation would be hard and not accurate. \\
+
+Instead, we can model $\E[Y|A=a,C=0,L=l]$ with a parametric model such as linear regression:
+\begin{equation*}
+    Y = \beta_0 + \beta_1 A + \beta_2 L + \epsilon
+\end{equation*}
+and have the the estimate $\hat{\E}[Y|A=a,C=0,L=l]$ for each level of $L$. \\
+
+However, we don't have $\prob [L=l]$. Fortunately, we have instead compute the average:
+\begin{equation*}
+    \hat{\E}[Y^{a, c=0}] = \frac{1}{n} \sum_{i=1}^{n} \hat{\E}[Y|A=a,C=0,L_i]
+\end{equation*}
+
+\textbf{g-formula}: standardization (plug-in g-formula), parametric g-formula
+
+\subsection*{IP Weighting or Standardization?}
+A question would directly pop out that since IP weighting and standardization are two ways to estimate the ATE and has similar result, which one would we choose? First we need to understand the difference between IP weighting and standardization:
+\begin{itemize}
+  \item IP weighting models $\prob[A=a,C=0 | L]$, which we can estimate by fitting logistic regressions to get the estimates of $\prob[A=a|L]$ and $\prob[C=0|A=a,L]$.
+  \item Standardization models $\E[Y|A=a,C=0,L]$, which we can estimate by fitting the linear regression.
+\end{itemize}
+
+All practical models contain some degree of non-ignorable misspecification, which inevitably introduces bias. However, the bias resulting from misspecification in IP weighting and standardization is unlikely to be of the same magnitude or direction. Therefore, we should \textbf{compare the estimates from both IP weighting and standardization simultaneously} to assess the robustness of the findings.
+\begin{itemize}
+  \item Big difference between those results will give us alert of the presense of model misspecification.
+  \item Small difference between those results cannot garantee anything, but will be assuring us of the robustness. (Low probability of model misspecification at the same time for both IP weighting and standardization.)
+\end{itemize}
+
+\textbf{Doubly Robust Estimator:} A method that only requires a correct model for using IP weighting (modeling treatment $A$) or standardization (modeling outcome $Y$). Under the usual identifiability assumptions, a doubly robust estimator consistently estimates the causal effect if at least one of the two models is correct (and one need not know which of the two models is correct). The whole procedure would be as follows:
+\begin{enumerate}
+  \item Estimate the IP weight $W^{A} = 1/f(A|L)$
+  \item Fit an outcome regression model with a canonical link for $\mathbb{E}[Y|A,L,R]$ that adds the covariate $R$, where $R=W^A$ if $A = 1$ and $R=-W^A$ if $A=0$
+  \item Calculate the average causal effect by the difference of the two estimators
+\end{enumerate}
+
+\textbf{Augmented IP Weighted Estimator:} For IP weighting method, we have the estimator in the form of $\mathbb{E}\left[ \frac{AY}{\pi(L)} \right]$, where $\pi(L)=\mathbb{P}[A=1|L]$. Also, For the standardization method, we have the estimator in the form of $\mathbb{E}[b(L)]$, where $b(L)=\mathbb{E}[Y|A=1,L]$. The \textit{augmented IP weighted estimator} is the average of the two estimators:
+\begin{align*}
+    \hat{\mathbb{E}}[Y^{a=1}]_{DR} &= \frac{1}{n} \sum_{i=1}^n \left[ \hat{b}(L_i) + \frac{A_i}{\hat{\pi}(L_i)} \left( Y_i - \hat{b}(L_i) \right) \right] \\
+                                     &= \frac{1}{n} \sum_{i=1}^n \left[ \frac{A_i Y_i}{\hat{\pi}(L_i)} - \left( \frac{A_i}{\hat{\pi}(L_i)} - 1 \right) \hat{b}(L_i) \right]
+\end{align*}
+Under exchageability and positivity,
+\begin{equation*}
+    \hat{\mathbb{E}}[Y^{a=1}]_{DR} - \mathbb{E}[Y^{a=1}] \overset{p}{\to} E\left[ \pi(L) \left( \frac{1}{\pi(L)} - \frac{1}{\pi^*(L)} \right) (b(L) - b^*(L)) \right],
+\end{equation*}
+where $\pi^*(L)$ and $b^*(L)$ are the probability limits of $\hat{\pi}(L)$ and $\hat{b}(L)$. It follows that doubly robust estimator is (asymptotically) unbiased when \textbf{either} the parametric \textbf{outcome model} is correct [so $b^*(L) = b(L)$] \textbf{or} the parametric \textbf{treatment model} is correct [so $\pi^*(L) = \pi(L)$]. Furthermore, we do not need to know which one of the two models is correct. Note that the bias of $\pi(L)$ and $b(L)$ can be small by using machine learning estimators.
+
+\subsection*{Cautious for the estimating results}
+Causal analysis using observational data is best conducted by explicitly modeling a hypothetical target trial. Even when limiting the inference to the population under study (not transporting the results), the validity of the causal estimate requires several conditions:
+\begin{itemize}
+  \item Identify the conditions of exchangeability (check confounding, selection bias), positivity (structural positivity) and consistency (check multiple version of treatments).
+  \item Identify all the variables used in the analysis should be correctly measured (check measurement error, confounders).
+  \item Check model misspecification, this is similar effect as measurement error in the confounders.
+\end{itemize}
+
+\textbf{Structural Positivity:} If the analytical model is perfectly specified, parametric or double robust methods can smooth over strata with structural zeros ("extrapolation"), the lack of positivity part in the dataset can be ignored. However, this introduces bias and reduces the standard error. Note that we use model to do extrapolation not because we lack enough data, but because we want to estimate a quantity that cannot be identified even with an infinite amount of data.
+
+\section{Data Analysis}\label{data-analysis}
+
+The dataset we have is from National Health and Nutrition Examination
+Survey Data I Epidemiologic Follow-up Study (NHEFS). Our goal is to
+estimate the average causal effect of smoking cessation (the treatment)
+on weight gain (the outcome).
+
+The variables are as follows:
+
+\begin{itemize}
+\item
+  \textbf{qsmk:} quit smoking between 1st questionnaire and 1982, 1:yes,
+  0:no
+\item
+  \textbf{sex:} 0: male 1: female
+\item
+  \textbf{race:} 0: white 1: black or other in 1971
+\item
+  \textbf{age:} age in 1971
+\item
+  \textbf{education:} amount of education by 1971: 1: 8th grade or less,
+  2: hs dropout, 3: hs, 4:college dropout, 5:college or more
+\item
+  \textbf{smokeintensity:} number of cigarettes smoked per day in 1971
+\item
+  \textbf{smokeyrs:} years of smoking
+\item
+  \textbf{exercise:} in recreation, how much exercise? in 1971, 0:much
+  exercise, 1:moderate exercise, 2:little or no exercise
+\item
+  \textbf{active:} in your usual day, how active are you? in 1971,
+  0:very active, 1:moderately active, 2:inactive
+\item
+  \textbf{wt71:} weight in kilograms in 1971
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nhefs }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"nhefs.csv"}\NormalTok{)}
+\NormalTok{nhefs}\SpecialCharTok{$}\NormalTok{cens }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(nhefs}\SpecialCharTok{$}\NormalTok{wt82), }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+
+\NormalTok{fit }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(wt82\_71 }\SpecialCharTok{\textasciitilde{}}\NormalTok{ qsmk }\SpecialCharTok{+}\NormalTok{ sex }\SpecialCharTok{+}\NormalTok{ race }\SpecialCharTok{+}\NormalTok{ age }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(age}\SpecialCharTok{*}\NormalTok{age) }\SpecialCharTok{+} \FunctionTok{as.factor}\NormalTok{(education)}
+           \SpecialCharTok{+}\NormalTok{ smokeintensity }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(smokeintensity}\SpecialCharTok{*}\NormalTok{smokeintensity) }\SpecialCharTok{+}\NormalTok{ smokeyrs}
+           \SpecialCharTok{+} \FunctionTok{I}\NormalTok{(smokeyrs}\SpecialCharTok{*}\NormalTok{smokeyrs) }\SpecialCharTok{+} \FunctionTok{as.factor}\NormalTok{(exercise) }\SpecialCharTok{+} \FunctionTok{as.factor}\NormalTok{(active)}
+           \SpecialCharTok{+}\NormalTok{ wt71 }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(wt71}\SpecialCharTok{*}\NormalTok{wt71) }\SpecialCharTok{+}\NormalTok{ qsmk}\SpecialCharTok{*}\NormalTok{smokeintensity, }\AttributeTok{data=}\NormalTok{nhefs)}
+\FunctionTok{summary}\NormalTok{(fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## glm(formula = wt82_71 ~ qsmk + sex + race + age + I(age * age) + 
+##     as.factor(education) + smokeintensity + I(smokeintensity * 
+##     smokeintensity) + smokeyrs + I(smokeyrs * smokeyrs) + as.factor(exercise) + 
+##     as.factor(active) + wt71 + I(wt71 * wt71) + qsmk * smokeintensity, 
+##     data = nhefs)
+## 
+## Coefficients:
+##                                      Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)                        -1.5881657  4.3130359  -0.368 0.712756    
+## qsmk                                2.5595941  0.8091486   3.163 0.001590 ** 
+## sex                                -1.4302717  0.4689576  -3.050 0.002328 ** 
+## race                                0.5601096  0.5818888   0.963 0.335913    
+## age                                 0.3596353  0.1633188   2.202 0.027809 *  
+## I(age * age)                       -0.0061010  0.0017261  -3.534 0.000421 ***
+## as.factor(education)2               0.7904440  0.6070005   1.302 0.193038    
+## as.factor(education)3               0.5563124  0.5561016   1.000 0.317284    
+## as.factor(education)4               1.4915695  0.8322704   1.792 0.073301 .  
+## as.factor(education)5              -0.1949770  0.7413692  -0.263 0.792589    
+## smokeintensity                      0.0491365  0.0517254   0.950 0.342287    
+## I(smokeintensity * smokeintensity) -0.0009907  0.0009380  -1.056 0.291097    
+## smokeyrs                            0.1343686  0.0917122   1.465 0.143094    
+## I(smokeyrs * smokeyrs)             -0.0018664  0.0015437  -1.209 0.226830    
+## as.factor(exercise)1                0.2959754  0.5351533   0.553 0.580298    
+## as.factor(exercise)2                0.3539128  0.5588587   0.633 0.526646    
+## as.factor(active)1                 -0.9475695  0.4099344  -2.312 0.020935 *  
+## as.factor(active)2                 -0.2613779  0.6845577  -0.382 0.702647    
+## wt71                                0.0455018  0.0833709   0.546 0.585299    
+## I(wt71 * wt71)                     -0.0009653  0.0005247  -1.840 0.066001 .  
+## qsmk:smokeintensity                 0.0466628  0.0351448   1.328 0.184463    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for gaussian family taken to be 53.5683)
+## 
+##     Null deviance: 97176  on 1565  degrees of freedom
+## Residual deviance: 82763  on 1545  degrees of freedom
+##   (63 observations deleted due to missingness)
+## AIC: 10701
+## 
+## Number of Fisher Scoring iterations: 2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# create a dataset with 3 copies of each subject}
+\NormalTok{nhefs}\SpecialCharTok{$}\NormalTok{interv }\OtherTok{\textless{}{-}} \SpecialCharTok{{-}}\DecValTok{1} \CommentTok{\# 1st copy: equal to original one}
+
+\NormalTok{interv0 }\OtherTok{\textless{}{-}}\NormalTok{ nhefs }\CommentTok{\# 2nd copy: treatment set to 0, outcome to missing}
+\NormalTok{interv0}\SpecialCharTok{$}\NormalTok{interv }\OtherTok{\textless{}{-}} \DecValTok{0}
+\NormalTok{interv0}\SpecialCharTok{$}\NormalTok{qsmk }\OtherTok{\textless{}{-}} \DecValTok{0}
+\NormalTok{interv0}\SpecialCharTok{$}\NormalTok{wt82\_71 }\OtherTok{\textless{}{-}} \ConstantTok{NA}
+
+\NormalTok{interv1 }\OtherTok{\textless{}{-}}\NormalTok{ nhefs }\CommentTok{\# 3rd copy: treatment set to 1, outcome to missing}
+\NormalTok{interv1}\SpecialCharTok{$}\NormalTok{interv }\OtherTok{\textless{}{-}} \DecValTok{1}
+\NormalTok{interv1}\SpecialCharTok{$}\NormalTok{qsmk }\OtherTok{\textless{}{-}} \DecValTok{1}
+\NormalTok{interv1}\SpecialCharTok{$}\NormalTok{wt82\_71 }\OtherTok{\textless{}{-}} \ConstantTok{NA}
+
+\NormalTok{onesample }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(nhefs, interv0, interv1) }\CommentTok{\# combining datasets}
+
+\CommentTok{\# linear model to estimate mean outcome conditional on treatment and confounders}
+\CommentTok{\# parameters are estimated using original observations only (nhefs)}
+\CommentTok{\# parameter estimates are used to predict mean outcome for observations with }
+\CommentTok{\# treatment set to 0 (interv=0) and to 1 (interv=1)}
+
+\NormalTok{std }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(wt82\_71 }\SpecialCharTok{\textasciitilde{}}\NormalTok{ qsmk }\SpecialCharTok{+}\NormalTok{ sex }\SpecialCharTok{+}\NormalTok{ race }\SpecialCharTok{+}\NormalTok{ age }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(age}\SpecialCharTok{*}\NormalTok{age)}
+           \SpecialCharTok{+} \FunctionTok{as.factor}\NormalTok{(education) }\SpecialCharTok{+}\NormalTok{ smokeintensity }
+           \SpecialCharTok{+} \FunctionTok{I}\NormalTok{(smokeintensity}\SpecialCharTok{*}\NormalTok{smokeintensity) }\SpecialCharTok{+}\NormalTok{ smokeyrs }
+           \SpecialCharTok{+} \FunctionTok{I}\NormalTok{(smokeyrs}\SpecialCharTok{*}\NormalTok{smokeyrs) }\SpecialCharTok{+} \FunctionTok{as.factor}\NormalTok{(exercise) }
+           \SpecialCharTok{+} \FunctionTok{as.factor}\NormalTok{(active) }\SpecialCharTok{+}\NormalTok{ wt71 }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(wt71}\SpecialCharTok{*}\NormalTok{wt71) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(qsmk}\SpecialCharTok{*}\NormalTok{smokeintensity), }
+           \AttributeTok{data=}\NormalTok{onesample)}
+\NormalTok{onesample}\SpecialCharTok{$}\NormalTok{predicted\_meanY }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(std, onesample)}
+
+\FunctionTok{mean}\NormalTok{(onesample[}\FunctionTok{which}\NormalTok{(onesample}\SpecialCharTok{$}\NormalTok{interv}\SpecialCharTok{==}\DecValTok{0}\NormalTok{),]}\SpecialCharTok{$}\NormalTok{predicted\_meanY)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1.660267
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{mean}\NormalTok{(onesample[}\FunctionTok{which}\NormalTok{(onesample}\SpecialCharTok{$}\NormalTok{interv}\SpecialCharTok{==}\DecValTok{1}\NormalTok{),]}\SpecialCharTok{$}\NormalTok{predicted\_meanY)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 5.178841
+\end{verbatim}
+
+\(\hat{E}[Y^{a=1,c=0}]\) is 5.178841 and \(\hat{E}[Y^{a=1,c=0}]\) is
+1.660267. Thus, the causal effect of 3.5kg.
+
+\section{Simulation of Augmented IP Weighting
+Estimator}\label{simulation-of-augmented-ip-weighting-estimator}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{42}\NormalTok{)}
+\NormalTok{n\_sims }\OtherTok{\textless{}{-}} \DecValTok{1000}
+\NormalTok{n\_sample }\OtherTok{\textless{}{-}} \DecValTok{500}
+\NormalTok{true\_ate }\OtherTok{\textless{}{-}} \DecValTok{2}
+
+\NormalTok{results }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\ConstantTok{NA}\NormalTok{, }\AttributeTok{nrow =}\NormalTok{ n\_sims, }\AttributeTok{ncol =} \DecValTok{6}\NormalTok{)}
+\FunctionTok{colnames}\NormalTok{(results) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"IPW Wrong"}\NormalTok{, }\StringTok{"ST Wrong"}\NormalTok{, }\StringTok{"DR(C,W)"}\NormalTok{, }\StringTok{"DR(W,C)"}\NormalTok{, }\StringTok{"DR Both Cor"}\NormalTok{, }\StringTok{"DR Both Wrong"}\NormalTok{)}
+
+\NormalTok{calc\_dr }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(Y, A\_obs, pi\_hat, b\_a1\_hat, b\_a0\_hat) \{}
+\NormalTok{  dr1 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{( (A\_obs }\SpecialCharTok{*}\NormalTok{ Y) }\SpecialCharTok{/}\NormalTok{ pi\_hat }\SpecialCharTok{{-}}\NormalTok{ ((A\_obs }\SpecialCharTok{{-}}\NormalTok{ pi\_hat) }\SpecialCharTok{/}\NormalTok{ pi\_hat) }\SpecialCharTok{*}\NormalTok{ b\_a1\_hat)}
+  
+\NormalTok{  dr0 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{( ((}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ A\_obs) }\SpecialCharTok{*}\NormalTok{ Y) }\SpecialCharTok{/}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ pi\_hat) }\SpecialCharTok{+}\NormalTok{ ((A\_obs }\SpecialCharTok{{-}}\NormalTok{ pi\_hat) }\SpecialCharTok{/}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ pi\_hat)) }\SpecialCharTok{*}\NormalTok{ b\_a0\_hat)}
+  
+  \FunctionTok{return}\NormalTok{(dr1 }\SpecialCharTok{{-}}\NormalTok{ dr0)}
+\NormalTok{\}}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{n\_sims) \{}
+  
+  \CommentTok{\# === A. Data Generation (The "Truth") ===}
+  \CommentTok{\# Confounder X is N(0,1)}
+\NormalTok{  X }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(n\_sample, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+  
+  \CommentTok{\# True $\textbackslash{}pi$: Depends on X AND X\^{}2 (Non{-}linear)}
+  \CommentTok{\# logit(P(T=1)) = {-}0.5 + 0.5*X + 0.2*X\^{}2}
+\NormalTok{  z }\OtherTok{\textless{}{-}} \SpecialCharTok{{-}}\FloatTok{0.5} \SpecialCharTok{+} \FloatTok{0.5} \SpecialCharTok{*}\NormalTok{ X }\SpecialCharTok{+} \FloatTok{0.2} \SpecialCharTok{*}\NormalTok{ (X}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\NormalTok{  true\_pi }\OtherTok{\textless{}{-}} \DecValTok{1} \SpecialCharTok{/}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{+} \FunctionTok{exp}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{z))}
+\NormalTok{  A\_obs }\OtherTok{\textless{}{-}} \FunctionTok{rbinom}\NormalTok{(n\_sample, }\DecValTok{1}\NormalTok{, true\_pi)}
+  
+  \CommentTok{\# True $b(L)$: Depends on A, X, AND X\^{}2}
+  \CommentTok{\# Y = 2*A + 1 + 2*X + 1.5*X\^{}2 + error}
+  \CommentTok{\# The coefficient of T is 2, so True ATE = 2}
+\NormalTok{  Y }\OtherTok{\textless{}{-}} \DecValTok{2} \SpecialCharTok{*}\NormalTok{ A\_obs }\SpecialCharTok{+} \DecValTok{1} \SpecialCharTok{+} \DecValTok{2} \SpecialCharTok{*}\NormalTok{ X }\SpecialCharTok{+} \FloatTok{1.5} \SpecialCharTok{*}\NormalTok{ (X}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{rnorm}\NormalTok{(n\_sample)}
+  
+  \CommentTok{\# Create a data frame}
+\NormalTok{  df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{Y =}\NormalTok{ Y, }\AttributeTok{T =}\NormalTok{ A\_obs, }\AttributeTok{X =}\NormalTok{ X, }\AttributeTok{X\_sq =}\NormalTok{ X}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+  
+  
+  \CommentTok{\# === B. Model Fitting ===}
+  
+  \CommentTok{\# 1. \textbackslash{}pi Estimation (IP Weighting)}
+  \CommentTok{\# Wrong Model: Only sees X (misses X\^{}2)}
+\NormalTok{  fit\_ps\_wrong }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(T }\SpecialCharTok{\textasciitilde{}}\NormalTok{ X, }\AttributeTok{data =}\NormalTok{ df, }\AttributeTok{family =}\NormalTok{ binomial)}
+\NormalTok{  ps\_wrong }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(fit\_ps\_wrong, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{)}
+  
+  \CommentTok{\# Correct Model: Sees X and X\^{}2}
+\NormalTok{  fit\_ps\_correct }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(T }\SpecialCharTok{\textasciitilde{}}\NormalTok{ X }\SpecialCharTok{+}\NormalTok{ X\_sq, }\AttributeTok{data =}\NormalTok{ df, }\AttributeTok{family =}\NormalTok{ binomial)}
+\NormalTok{  ps\_correct }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(fit\_ps\_correct, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{)}
+  
+  
+  \CommentTok{\# 2. b(L) estimation (Standardization)}
+  \CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+  \CommentTok{\# Wrong Model: Only sees X (misses X\^{}2)}
+\NormalTok{  fit\_or\_wrong }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ T }\SpecialCharTok{+}\NormalTok{ X, }\AttributeTok{data =}\NormalTok{ df)}
+\NormalTok{  mu1\_wrong }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(fit\_or\_wrong, }\AttributeTok{newdata =} \FunctionTok{transform}\NormalTok{(df, }\AttributeTok{T =} \DecValTok{1}\NormalTok{))}
+\NormalTok{  mu0\_wrong }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(fit\_or\_wrong, }\AttributeTok{newdata =} \FunctionTok{transform}\NormalTok{(df, }\AttributeTok{T =} \DecValTok{0}\NormalTok{))}
+  
+  \CommentTok{\# Correct Model: Sees X and X\^{}2}
+\NormalTok{  fit\_or\_correct }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ T }\SpecialCharTok{+}\NormalTok{ X }\SpecialCharTok{+}\NormalTok{ X\_sq, }\AttributeTok{data =}\NormalTok{ df)}
+\NormalTok{  mu1\_correct }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(fit\_or\_correct, }\AttributeTok{newdata =} \FunctionTok{transform}\NormalTok{(df, }\AttributeTok{T =} \DecValTok{1}\NormalTok{))}
+\NormalTok{  mu0\_correct }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(fit\_or\_correct, }\AttributeTok{newdata =} \FunctionTok{transform}\NormalTok{(df, }\AttributeTok{T =} \DecValTok{0}\NormalTok{))}
+  
+  \CommentTok{\# Scenario 1: IPW (Wrong Model)}
+  \CommentTok{\# Formula: mean( TY/e {-} (1{-}T)Y/(1{-}e) )}
+\NormalTok{  ipw\_est }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{( (df}\SpecialCharTok{$}\NormalTok{T }\SpecialCharTok{*}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{Y) }\SpecialCharTok{/}\NormalTok{ ps\_wrong }\SpecialCharTok{{-}}\NormalTok{ ((}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{T) }\SpecialCharTok{*}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{Y) }\SpecialCharTok{/}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ ps\_wrong) )}
+\NormalTok{  results[i, }\DecValTok{1}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ ipw\_est}
+  
+  \CommentTok{\# Scenario 2: Standardization (ST) (Wrong Model)}
+  \CommentTok{\# Formula: mean( mu1 {-} mu0 )}
+\NormalTok{  or\_est }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(mu1\_wrong }\SpecialCharTok{{-}}\NormalTok{ mu0\_wrong)}
+\NormalTok{  results[i, }\DecValTok{2}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ or\_est}
+  
+  \CommentTok{\# Scenario 3: DR (IP Correct, ST Wrong)}
+\NormalTok{  results[i, }\DecValTok{3}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{calc\_dr}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{Y, df}\SpecialCharTok{$}\NormalTok{T, ps\_correct, mu1\_wrong, mu0\_wrong)}
+  
+  \CommentTok{\# Scenario 4: DR (IP Wrong, ST Correct)}
+\NormalTok{  results[i, }\DecValTok{4}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{calc\_dr}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{Y, df}\SpecialCharTok{$}\NormalTok{T, ps\_wrong, mu1\_correct, mu0\_correct)}
+  
+  \CommentTok{\# Scenario 5: DR (Both Correct)}
+\NormalTok{  results[i, }\DecValTok{5}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{calc\_dr}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{Y, df}\SpecialCharTok{$}\NormalTok{T, ps\_correct, mu1\_correct, mu0\_correct)}
+  
+  \CommentTok{\# Senario 6: DR (Both Wrong)}
+\NormalTok{  results[i, }\DecValTok{6}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{calc\_dr}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{Y, df}\SpecialCharTok{$}\NormalTok{T, ps\_wrong, mu1\_wrong, mu0\_wrong)}
+\NormalTok{\}}
+
+\CommentTok{\# Calculate Bias and MSE}
+\NormalTok{summary\_table }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Estimator =} \FunctionTok{colnames}\NormalTok{(results),}
+  \AttributeTok{Mean\_Estimate =} \FunctionTok{colMeans}\NormalTok{(results),}
+  \AttributeTok{Bias =} \FunctionTok{colMeans}\NormalTok{(results) }\SpecialCharTok{{-}}\NormalTok{ true\_ate,}
+  \AttributeTok{MSE =} \FunctionTok{colMeans}\NormalTok{((results }\SpecialCharTok{{-}}\NormalTok{ true\_ate)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\NormalTok{)}
+
+\FunctionTok{rownames}\NormalTok{(summary\_table) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{()}
+
+\FunctionTok{print}\NormalTok{(summary\_table, }\AttributeTok{digits =} \DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Estimator Mean_Estimate     Bias      MSE
+## 1     IPW Wrong         2.640 0.639562 0.493290
+## 2      ST Wrong         2.535 0.535135 0.332257
+## 3       DR(C,W)         2.016 0.016078 0.024198
+## 4       DR(W,C)         2.004 0.003938 0.009011
+## 5   DR Both Cor         2.003 0.003109 0.009054
+## 6 DR Both Wrong         2.616 0.616402 0.461804
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{boxplot}\NormalTok{(results, }
+        \AttributeTok{main =} \StringTok{"Performance: IPW vs ST vs DR under Misspecification"}\NormalTok{,}
+        \AttributeTok{ylab =} \StringTok{"Estimated ATE"}\NormalTok{,}
+        \AttributeTok{col =} \FunctionTok{c}\NormalTok{(}\StringTok{"salmon"}\NormalTok{, }\StringTok{"salmon"}\NormalTok{, }\StringTok{"lightblue"}\NormalTok{, }\StringTok{"lightblue"}\NormalTok{, }\StringTok{"lightgreen"}\NormalTok{, }\StringTok{"purple"}\NormalTok{),}
+        \AttributeTok{names =} \FunctionTok{c}\NormalTok{(}\StringTok{"IPW Wrong"}\NormalTok{, }\StringTok{"ST Wrong"}\NormalTok{, }\StringTok{"DR(C,W)"}\NormalTok{, }\StringTok{"DR(W,C)"}\NormalTok{, }\StringTok{"DR(C,C)"}\NormalTok{, }\StringTok{"DR(W,W)"}\NormalTok{),}
+        \AttributeTok{las =} \DecValTok{1}\NormalTok{,}
+        \AttributeTok{cex.axis =} \FloatTok{0.8}\NormalTok{) }\CommentTok{\# Horizontal labels, slightly smaller text}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{h =}\NormalTok{ true\_ate, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{, }\AttributeTok{lty =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{ch13_appendix_files/figure-latex/unnamed-chunk-4-1.pdf}}
+
+\newpage
+
+\printbibliography
+
+\end{document}
